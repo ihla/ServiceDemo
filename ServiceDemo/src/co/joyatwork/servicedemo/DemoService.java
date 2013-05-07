@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 
 public class DemoService extends Service {
@@ -26,12 +27,18 @@ public class DemoService extends Service {
 					+ ", " 
 					+ startId 
 					+ ")");
+		
+		Toast.makeText(this, "service starting " + startId, Toast.LENGTH_SHORT).show();
+		
 		return START_STICKY;
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy()");
+
+		Toast.makeText(this, "service stoping", Toast.LENGTH_SHORT).show();
+
 		super.onDestroy();
 	}
 

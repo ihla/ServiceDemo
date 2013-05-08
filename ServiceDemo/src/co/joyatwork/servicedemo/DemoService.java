@@ -1,8 +1,13 @@
 package co.joyatwork.servicedemo;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,9 +18,26 @@ public class DemoService extends Service {
 
 	@Override
 	public void onCreate() {
-		// TODO Auto-generated method stub
 		Log.d(TAG, "onCreate()");
-		super.onCreate();
+		
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+			.setSmallIcon(R.drawable.notification_icon)
+			.setContentTitle("Demo Service")
+			.setContentText("press to launch");
+		
+		Intent launcActivity = new Intent(this, MainActivity.class);
+		
+		TaskStackBuilder backStackBuilder = TaskStackBuilder.create(this);
+		backStackBuilder.addParentStack(MainActivity.class);
+		backStackBuilder.addNextIntent(launcActivity);
+		PendingIntent launchPendingActivity = backStackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		notificationBuilder.setContentIntent(launchPendingActivity);
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(0, notificationBuilder.build());
+	
 	}
 
 	@Override
@@ -39,7 +61,8 @@ public class DemoService extends Service {
 
 		Toast.makeText(this, "service stoping", Toast.LENGTH_SHORT).show();
 
-		super.onDestroy();
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
 	}
 
 	@Override

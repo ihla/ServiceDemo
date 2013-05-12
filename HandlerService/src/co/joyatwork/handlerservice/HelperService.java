@@ -14,18 +14,42 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 public class HelperService extends Service {
 	
 	private final class AccelerometerListener implements SensorEventListener {
+		private static final long NANO_TO_MILISECONDS = 1000000;
+		private long lastUpdateTime = 0;
+		private long startTime = SystemClock.uptimeMillis();
+
 		@Override
 		public void onSensorChanged(SensorEvent event) {
-			Log.d(TAG, "onSensorChanged called on " + Thread.currentThread().getName());
 			
+			long currentSampleTime = event.timestamp / NANO_TO_MILISECONDS - startTime;
+			
+			if (updateTimeElapsed(currentSampleTime)) {
+				Log.d(TAG, "onSensorChanged called on " + Thread.currentThread().getName()
+					+ " " + currentSampleTime + " ms");
+				
+				updateGUI(event.values.clone());
+				
+			}
+			
+		}
+
+		private boolean updateTimeElapsed(long currentSampleTime) {
+			long deltaTime = currentSampleTime - lastUpdateTime;
+			if (deltaTime >= 200) {
+				lastUpdateTime = currentSampleTime;
+				return true;
+			}
+			return false;
 		}
 
 		@Override
@@ -65,7 +89,20 @@ public class HelperService extends Service {
 		
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.notify(0, notificationBuilder.build());
+		
 
+	}
+
+	protected void updateGUI(float[] values) {
+
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+		Intent intent = new Intent("co.joyatwork.handlerservice.ACC_UPDATE")
+			.putExtra("co.joyatwork.handleservice.X_VALUE", "" + values[0])
+			.putExtra("co.joyatwork.handleservice.Y_VALUE", "" + values[1])
+			.putExtra("co.joyatwork.handleservice.Z_VALUE", "" + values[2])
+			;
+		lbm.sendBroadcast(intent);
+			
 	}
 
 	@Override

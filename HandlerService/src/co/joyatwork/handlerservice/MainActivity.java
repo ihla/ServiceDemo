@@ -1,13 +1,46 @@
 package co.joyatwork.handlerservice;
 
+import co.joyatwork.handlerservice.R.id;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
+	
+	private static final String TAG = "MainActivity";
+
+	private final class AccelerometerUpdateReciever extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, "AccelerometerUpdateReciever.onReceive " + intent.getAction());
+			
+			if (intent.hasExtra("co.joyatwork.handleservice.X_VALUE")) {
+				TextView xValueTextView = (TextView) findViewById(id.accXValTextView);
+				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.X_VALUE"));
+			}
+			if (intent.hasExtra("co.joyatwork.handleservice.Y_VALUE")) {
+				TextView xValueTextView = (TextView) findViewById(id.accYValTextView);
+				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.Y_VALUE"));
+			}
+			if (intent.hasExtra("co.joyatwork.handleservice.Z_VALUE")) {
+				TextView xValueTextView = (TextView) findViewById(id.accZValTextView);
+				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.Z_VALUE"));
+			}
+			
+		}
+		
+	}
+	private BroadcastReceiver accelerometerUpdateReceiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +59,28 @@ public class MainActivity extends Activity {
 			}
 		});
 		
+		accelerometerUpdateReceiver = new AccelerometerUpdateReciever();
+		
 		// start service explicitly
 		Intent intent = new Intent(MainActivity.this, HelperService.class);
 		startService(intent);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+		lbm.registerReceiver(accelerometerUpdateReceiver, new IntentFilter("co.joyatwork.handlerservice.ACC_UPDATE"));
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+		lbm.unregisterReceiver(accelerometerUpdateReceiver);
+
 	}
 
 	@Override

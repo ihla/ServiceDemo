@@ -93,18 +93,6 @@ public class HelperService extends Service {
 
 	}
 
-	protected void updateGUI(float[] values) {
-
-		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
-		Intent intent = new Intent("co.joyatwork.handlerservice.ACC_UPDATE")
-			.putExtra("co.joyatwork.handleservice.X_VALUE", "" + values[0])
-			.putExtra("co.joyatwork.handleservice.Y_VALUE", "" + values[1])
-			.putExtra("co.joyatwork.handleservice.Z_VALUE", "" + values[2])
-			;
-		lbm.sendBroadcast(intent);
-			
-	}
-
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -187,5 +175,18 @@ public class HelperService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	protected void updateGUI(float[] values) {
+
+		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
+		Intent intent = new Intent(getResources().getString(R.string.acc_update_action))
+			.putExtra(getResources().getString(R.string.acc_x_value), "" + values[0])
+			.putExtra(getResources().getString(R.string.acc_y_value), "" + values[1])
+			.putExtra(getResources().getString(R.string.acc_z_value), "" + values[2])
+			;
+		lbm.sendBroadcast(intent);
+			
+	}
+
 
 }

@@ -24,17 +24,20 @@ public class MainActivity extends Activity {
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, "AccelerometerUpdateReciever.onReceive " + intent.getAction());
 			
-			if (intent.hasExtra("co.joyatwork.handleservice.X_VALUE")) {
+			if (intent.hasExtra(getResources().getString(R.string.acc_x_value))) {
 				TextView xValueTextView = (TextView) findViewById(id.accXValTextView);
-				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.X_VALUE"));
+				xValueTextView.setText(
+						intent.getExtras().getCharSequence(getResources().getString(R.string.acc_x_value)));
 			}
-			if (intent.hasExtra("co.joyatwork.handleservice.Y_VALUE")) {
+			if (intent.hasExtra(getResources().getString(R.string.acc_y_value))) {
 				TextView xValueTextView = (TextView) findViewById(id.accYValTextView);
-				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.Y_VALUE"));
+				xValueTextView.setText(
+						intent.getExtras().getCharSequence(getResources().getString(R.string.acc_y_value)));
 			}
-			if (intent.hasExtra("co.joyatwork.handleservice.Z_VALUE")) {
+			if (intent.hasExtra(getResources().getString(R.string.acc_z_value))) {
 				TextView xValueTextView = (TextView) findViewById(id.accZValTextView);
-				xValueTextView.setText(intent.getExtras().getCharSequence("co.joyatwork.handleservice.Z_VALUE"));
+				xValueTextView.setText(
+						intent.getExtras().getCharSequence(getResources().getString(R.string.acc_z_value)));
 			}
 			
 		}
@@ -71,7 +74,8 @@ public class MainActivity extends Activity {
 		super.onResume();
 		
 		LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this);
-		lbm.registerReceiver(accelerometerUpdateReceiver, new IntentFilter("co.joyatwork.handlerservice.ACC_UPDATE"));
+		lbm.registerReceiver(accelerometerUpdateReceiver, 
+				new IntentFilter(getResources().getString(R.string.acc_update_action)));
 	}
 
 	@Override

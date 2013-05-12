@@ -3,5 +3,9 @@
 
     <string name="app_name">HandlerService</string>
     <string name="action_settings">Settings</string>
-
+    <string name="acc_update_action">co.joyatwork.ACC_UPDATE</string>
+    <string name="acc_x_value">co.joyatwork.ACC_X_VALUE</string>
+    <string name="acc_y_value">co.joyatwork.ACC_Y_VALUE</string>
+    <string name="acc_z_value">co.joyatwork.ACC_Z_VALUE</string>
+        
 </resources>

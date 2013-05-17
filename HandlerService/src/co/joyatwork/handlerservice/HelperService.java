@@ -133,16 +133,16 @@ public class HelperService extends Service {
 			helperThread.start();
 			
 			/* TODO alternative solution
-			SensorManager mSensorMgr = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+			SensorManager sensorManager = (SensorManager) mContext.getSystemService(SENSOR_SERVICE);
 			
-			HandlerThread mHandlerThread = new HandlerThread("sensorThread");
+			HandlerThread helperThread = new HandlerThread("HelperThread");
 			
-			mHandlerThread.start();
+			helperThread.start();
 			
-			Handler handler = new Handler(mHandlerThread.getLooper());
+			Handler handler = new Handler(helperThread.getLooper());
 			
 			mSensorMgr.registerListener(this, mSensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-				SensorManager.SENSOR_DELAY_FASTEST, handler);
+				SensorManager.SENSOR_DELAY_GAME, handler);
 			*/
 			
 		}
@@ -163,7 +163,9 @@ public class HelperService extends Service {
 		
 		if (isRunning) {
 			isRunning = false;
-			helperThread.interrupt(); //TODO do I need to interrupt thread when the parent service is killed?
+			//TODO do I need to interrupt thread when the parent service is killed?
+			//Thread with Looper probably will be killed when service is killed! 
+			//helperThread.interrupt(); 
 			sensorManager.unregisterListener(listener);
 			//..
 		}

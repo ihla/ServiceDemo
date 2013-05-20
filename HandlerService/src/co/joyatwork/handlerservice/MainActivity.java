@@ -3,10 +3,14 @@ package co.joyatwork.handlerservice;
 import co.joyatwork.handlerservice.R.id;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
@@ -58,15 +62,45 @@ public class MainActivity extends Activity {
 				// stop service implicitly
 				Intent intent = new Intent(MainActivity.this, HelperService.class);
 				stopService(intent);
+				cancelNotification();
 				finish();
 			}
+
 		});
 		
 		accelerometerUpdateReceiver = new AccelerometerUpdateReciever();
 		
 		// start service explicitly
+		
 		Intent intent = new Intent(MainActivity.this, HelperService.class);
 		startService(intent);
+		launchNotification();
+		
+	}
+
+	private void launchNotification() {
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+		.setSmallIcon(R.drawable.notification_icon)
+		.setContentTitle("Handler Service")
+		.setContentText("press to launch");
+	
+		Intent launcActivity = new Intent(this, MainActivity.class);
+		
+		TaskStackBuilder backStackBuilder = TaskStackBuilder.create(this);
+		backStackBuilder.addParentStack(MainActivity.class);
+		backStackBuilder.addNextIntent(launcActivity);
+		PendingIntent launchPendingActivity = backStackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		
+		notificationBuilder.setContentIntent(launchPendingActivity);
+		
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(0, notificationBuilder.build());
+	}
+
+	private void cancelNotification() {
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancelAll();
 	}
 
 	@Override

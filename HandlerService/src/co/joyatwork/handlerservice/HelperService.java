@@ -1,11 +1,10 @@
 package co.joyatwork.handlerservice;
 
-import co.joyatwork.handlerservice.MainActivity;
 import co.joyatwork.handlerservice.R;
-import android.app.NotificationManager;
+import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -23,6 +22,13 @@ import android.widget.Toast;
 
 public class HelperService extends Service {
 	
+	@SuppressLint("NewApi")
+	@Override
+	public void onTrimMemory(int level) {
+		Log.d(TAG, "onTrimMemory() level: " + level);
+		super.onTrimMemory(level);
+	}
+
 	private final class AccelerometerListener implements SensorEventListener {
 		private static final long NANO_TO_MILISECONDS = 1000000;
 		private long lastUpdateTime = 0;
@@ -34,8 +40,8 @@ public class HelperService extends Service {
 			long currentSampleTime = event.timestamp / NANO_TO_MILISECONDS - startTime;
 			
 			if (updateTimeElapsed(currentSampleTime)) {
-				Log.d(TAG, "onSensorChanged called on " + Thread.currentThread().getName()
-					+ " " + currentSampleTime + " ms");
+				//Log.d(TAG, "onSensorChanged called on " + Thread.currentThread().getName()
+					//+ " " + currentSampleTime + " ms");
 				
 				updateGUI(event.values.clone());
 				
@@ -71,25 +77,6 @@ public class HelperService extends Service {
 		super.onCreate();
 		
 		Log.d(TAG, "onCreate");
-
-		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-		.setSmallIcon(R.drawable.notification_icon)
-		.setContentTitle("Handler Service")
-		.setContentText("press to launch");
-	
-		Intent launcActivity = new Intent(this, MainActivity.class);
-		
-		TaskStackBuilder backStackBuilder = TaskStackBuilder.create(this);
-		backStackBuilder.addParentStack(MainActivity.class);
-		backStackBuilder.addNextIntent(launcActivity);
-		PendingIntent launchPendingActivity = backStackBuilder.getPendingIntent(0,
-				PendingIntent.FLAG_UPDATE_CURRENT);
-		
-		notificationBuilder.setContentIntent(launchPendingActivity);
-		
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.notify(0, notificationBuilder.build());
-		
 
 	}
 
@@ -158,9 +145,6 @@ public class HelperService extends Service {
 
 		Toast.makeText(this, "service stoping", Toast.LENGTH_LONG).show();
 
-		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		notificationManager.cancelAll();
-		
 		if (isRunning) {
 			isRunning = false;
 			//TODO do I need to interrupt thread when the parent service is killed?
